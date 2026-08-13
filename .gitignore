@@ -1,0 +1,13 @@
+# Folder cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# File sementara sistem
+.DS_Store
+Thumbs.db
+
+# File database / konfigurasi rahasia
+*.sql.bak
+.env
