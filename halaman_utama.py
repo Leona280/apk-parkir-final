@@ -5,6 +5,7 @@ from koneksi import buat_koneksi
 from log_aktivitas import tampilkan_log
 from cetak_struk import cetak_struk
 from daftar_parkir import tampilkan_daftar
+from cetak_struk_masuk import cetak_struk_masuk
 
 def buat_halaman_utama(aplikasi):
     aplikasi.clear_window()
@@ -119,6 +120,14 @@ def buat_halaman_utama(aplikasi):
 
                 db.commit()
                 messagebox.showinfo("Berhasil", f"Kendaraan Masuk!\nPlat: {plat}\nWaktu: {waktu_masuk}")
+                
+                rincian = f"""PLAT NOMOR: {plat}
+                            JENIS: {jenis.capitalize()}
+                            MASUK: {waktu_masuk.strftime('%d-%m-%Y %H:%M')}
+                            PEMILIK: {pemilik}"""
+                
+                if messagebox.askyesno("Cetak Struk", "Cetak struk masuk?"):
+                    cetak_struk_masuk(plat, jenis.capitalize(), waktu_masuk, area_pilih, pemilik)
 
                 ent_plat.delete(0, "end")
                 ent_warna.delete(0, "end")
