@@ -14,7 +14,7 @@ def cetak_struk(plat, jenis, masuk, keluar, lama, tarif, total):
     c = canvas.Canvas(path_lengkap)
 
     c.setFont("Helvetica-Bold", 16)
-    c.drawString(70, 780, "============ STRUK PARKIR ============")
+    c.drawString(70, 780, "========= STRUK PARKIR =========")
 
     c.setFont("Helvetica", 11)
     y = 750

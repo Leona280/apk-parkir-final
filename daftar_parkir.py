@@ -4,18 +4,15 @@ from koneksi import buat_koneksi
 from datetime import datetime
 
 def tampilkan_daftar(induk):
-    # === BUAT JENDELA ===
     jendela = ctk.CTkToplevel(induk)
     jendela.title("DAFTAR PARKIR TERBARU")
-    jendela.geometry("820x420")
+    jendela.geometry("620x420")
 
-    # === TOMBOL REFRESH MANUAL ===
     frm_atas = ctk.CTkFrame(jendela, fg_color="transparent")
     frm_atas.pack(fill="x", padx=15, pady=5)
 
     ctk.CTkLabel(frm_atas, text="DAFTAR TRANSAKSI PARKIR", font=("Arial", 14, "bold")).pack(side="left")
     
-    # Tombol Refresh
     btn_refresh = ctk.CTkButton(frm_atas, text="Refresh", 
                                 width=30, height=30, corner_radius=8,
                                 fg_color="#6c5ce7", hover_color="#5b4cdb")
@@ -57,7 +54,6 @@ def tampilkan_daftar(induk):
             kuror.close()
             db.close()
 
-        # Isi data baru
         if daftar:
             for baris in daftar:
                 biaya = f"Rp {int(baris[5]):,}" if baris[5] else "-"

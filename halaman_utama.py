@@ -221,38 +221,38 @@ def buat_halaman_utama(aplikasi):
                                     fg_color="#fd7e14", hover_color="#e86e05", width=280, height=50, corner_radius=10, 
                                     command=lambda: tampilkan_daftar(aplikasi)).pack(side="left", pady=5, padx=20)
 
-        else:
-            frm_pilih = ctk.CTkFrame(aplikasi)
-            frm_pilih.pack(pady=5, padx=40, fill="x")
+    else:
+        frm_pilih = ctk.CTkFrame(aplikasi)
+        frm_pilih.pack(pady=5, padx=40, fill="x")
 
-            ctk.CTkLabel(frm_pilih, text="Pilih Periode:", font=("Arial", 12, "bold")).pack(side="left", padx=20)
+        ctk.CTkLabel(frm_pilih, text="Pilih Periode:", font=("Arial", 12, "bold")).pack(side="left", padx=20)
 
-            var_periode = ctk.StringVar(value="harian")
-            ctk.CTkRadioButton(frm_pilih, text="Harian", variable=var_periode, value="harian", font=("Arial", 11)).pack(side="left", padx=15)
-            ctk.CTkRadioButton(frm_pilih, text="Mingguan", variable=var_periode, value="mingguan", font=("Arial", 11)).pack(side="left", padx=15)
-            ctk.CTkRadioButton(frm_pilih, text="Bulanan", variable=var_periode, value="bulanan", font=("Arial", 11)).pack(side="left", padx=15)
+        var_periode = ctk.StringVar(value="harian")
+        ctk.CTkRadioButton(frm_pilih, text="Harian", variable=var_periode, value="harian", font=("Arial", 11)).pack(side="left", padx=15)
+        ctk.CTkRadioButton(frm_pilih, text="Mingguan", variable=var_periode, value="mingguan", font=("Arial", 11)).pack(side="left", padx=15)
+        ctk.CTkRadioButton(frm_pilih, text="Bulanan", variable=var_periode, value="bulanan", font=("Arial", 11)).pack(side="left", padx=15)
 
-            frm_tabel = ctk.CTkFrame(aplikasi)
-            frm_tabel.pack(pady=15, padx=40, fill="both", expand=True)
+        frm_tabel = ctk.CTkFrame(aplikasi)
+        frm_tabel.pack(pady=15, padx=40, fill="both", expand=True)
 
-            cols = ("Periode", "Jumlah Transaksi", "Total Kendaraan", "Total Pendapatan")
-            tabel = ttk.Treeview(frm_tabel, columns=cols, show="headings", height=10)
+        cols = ("Periode", "Jumlah Transaksi", "Total Kendaraan", "Total Pendapatan")
+        tabel = ttk.Treeview(frm_tabel, columns=cols, show="headings", height=10)
 
-            tabel.heading("Periode", text="Periode")
-            tabel.heading("Jumlah Transaksi", text="Jumlah Transaksi")
-            tabel.heading("Total Kendaraan", text="Total Kendaraan")
-            tabel.heading("Total Pendapatan", text="Total Pendapatan")
+        tabel.heading("Periode", text="Periode")
+        tabel.heading("Jumlah Transaksi", text="Jumlah Transaksi")
+        tabel.heading("Total Kendaraan", text="Total Kendaraan")
+        tabel.heading("Total Pendapatan", text="Total Pendapatan")
 
-            tabel.column("Periode", width=200, anchor="center")
-            tabel.column("Jumlah Transaksi", width=200, anchor="center")
-            tabel.column("Total Kendaraan", width=200, anchor="center")
-            tabel.column("Total Pendapatan", width=200, anchor="center")
+        tabel.column("Periode", width=200, anchor="center")
+        tabel.column("Jumlah Transaksi", width=200, anchor="center")
+        tabel.column("Total Kendaraan", width=200, anchor="center")
+        tabel.column("Total Pendapatan", width=200, anchor="center")
 
-            tabel.pack(fill="both", expand=True)
+        tabel.pack(fill="both", expand=True)
 
-            def muat_rekap():
-                for baris in tabel.get_children():
-                    tabel.delete(baris)
+        def muat_rekap():
+            for baris in tabel.get_children():
+                tabel.delete(baris)
 
             jenis = var_periode.get()
             db = buat_koneksi()
@@ -265,9 +265,9 @@ def buat_halaman_utama(aplikasi):
                 if jenis == "harian":
                     kuror.execute("""
                         SELECT DATE(waktu_masuk) AS periode,
-                        COUNT(*) AS jumlah,
-                        COUNT(DISTINCT id_kendaraan) AS kendaraan,
-                        SUM(biaya_total) AS pendapatan
+                            COUNT(*) AS jumlah,
+                            COUNT(DISTINCT id_kendaraan) AS kendaraan,
+                            SUM(biaya_total) AS pendapatan
                         FROM tb_transaksi
                         WHERE status = 'keluar'
                         GROUP BY DATE(waktu_masuk)
@@ -277,9 +277,9 @@ def buat_halaman_utama(aplikasi):
                 elif jenis == "mingguan":
                     kuror.execute("""
                         SELECT CONCAT(YEAR(waktu_masuk), ' - Minggu ', WEEK(waktu_masuk)) AS periode,
-                        COUNT(*) AS jumlah,
-                        COUNT(DISTINCT id_kendaraan) AS kendaraan,
-                        SUM(biaya_total) AS pendapatan
+                            COUNT(*) AS jumlah,
+                            COUNT(DISTINCT id_kendaraan) AS kendaraan,
+                            SUM(biaya_total) AS pendapatan
                         FROM tb_transaksi
                         WHERE status = 'keluar'
                         GROUP BY YEAR(waktu_masuk), WEEK(waktu_masuk)
@@ -289,9 +289,9 @@ def buat_halaman_utama(aplikasi):
                 elif jenis == "bulanan":
                     kuror.execute("""
                         SELECT CONCAT(YEAR(waktu_masuk), ' - ', MONTHNAME(waktu_masuk)) AS periode,
-                        COUNT(*) AS jumlah,
-                        COUNT(DISTINCT id_kendaraan) AS kendaraan,
-                        SUM(biaya_total) AS pendapatan
+                            COUNT(*) AS jumlah,
+                            COUNT(DISTINCT id_kendaraan) AS kendaraan,
+                            SUM(biaya_total) AS pendapatan
                         FROM tb_transaksi
                         WHERE status = 'keluar'
                         GROUP BY YEAR(waktu_masuk), MONTH(waktu_masuk)
@@ -316,7 +316,6 @@ def buat_halaman_utama(aplikasi):
                             str(baris[2]),
                             f"Rp {pendapatan:,}"
                         ))
-
                     tabel.insert("", "end", values=(
                         "TOTAL SEMUA",
                         str(total_transaksi),
