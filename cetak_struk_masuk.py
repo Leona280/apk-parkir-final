@@ -1,35 +1,54 @@
-from reportlab.pdfgen import canvas
 from tkinter import messagebox
 import os
 from datetime import datetime
 
-def cetak_struk_masuk(plat, jenis, masuk, area_pilih, pemilik):
-    nama_folder = "struk_parkir"
-    if not os.path.exists(nama_folder):
-        os.makedirs(nama_folder)
+def cetak_tiket_masuk(plat_nomor, jenis_kendaraan, waktu_masuk, area_parkir):
+    folder = "tiket_masuk"
+    if not os.path.exists(folder):
+        os.makedirs(folder)
 
-    nama_file = f"struk_{plat}_{masuk.strftime('%Y%m%d_%H%M%S')}.pdf"
-    path_lengkap = os.path.join(nama_folder, nama_file)
+    nama_file = f"{folder}/tiket_masuk_{plat_nomor}_{waktu_masuk.strftime('%Y%m%d_%H%M%S')}.pdf"
 
-    c = canvas.Canvas(path_lengkap)
+    try:
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter
+        from reportlab.lib.units import cm
 
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(70, 780, "========= STRUK PARKIR =========")
+        c = canvas.Canvas(nama_file, pagesize=letter)
+        lebar, tinggi = letter
 
-    c.setFont("Helvetica", 11)
-    y = 750
+        c.setFont("Helvetica-Bold", 18)
+        c.drawCentredString(lebar/2, tinggi - 3*cm, "TIKET MASUK PARKIR")
 
-    c.drawString(50, y, f"Plat Nomor    : {plat}"); y-=20
-    c.drawString(50, y, f"Jenis         : {jenis}"); y-=20
-    c.drawString(50, y, f"Waktu Masuk   : {masuk.strftime('%d-%m-%Y %H:%M')}"); y-=20
-    c.drawString(50, y, f"Area Parkir   : {area_pilih}"); y-=20
-    c.drawString(50, y, f"Nama Pemilik  : {pemilik}"); y-=20
-    c.drawString(50, y, "-"*40); y-=15
-    c.setFont("Helvetica-Bold", 12)
+        c.line(3*cm, tinggi - 5.5*cm, lebar - 3*cm, tinggi - 5.5*cm)
 
-    c.setFont("Helvetica", 10)
-    c.drawString(50, y, "Selamat Datang")
+        c.setFont("Helvetica", 13)
+        y = tinggi - 7*cm
+        jarak = 0.8*cm
 
-    c.save()
-    messagebox.showinfo("Berhasil", 
-        f"Struk disimpan di folder:\n{os.path.abspath(nama_folder)}\n\nNama file: {nama_file}")
+        c.drawString(3.5*cm, y, f"Plat Nomor   : {plat_nomor.upper()}")
+        y -= jarak
+        c.drawString(3.5*cm, y, f"Jenis Kendaraan: {jenis_kendaraan}")
+        y -= jarak
+        c.drawString(3.5*cm, y, f"Area Parkir    : {area_parkir}")
+        y -= jarak
+        c.drawString(3.5*cm, y, f"Waktu Masuk   : {waktu_masuk.strftime('%d-%m-%Y %H:%M:%S')}")
+
+        c.line(3*cm, y - jarak, lebar - 3*cm, y - jarak)
+
+        y -= 1.5*cm
+        c.setFont("Helvetica-Oblique", 11)
+        c.drawCentredString(lebar/2, y, "Simpan tiket ini dengan baik, akan diperlukan saat keluar!")
+        y -= jarak
+        c.drawCentredString(lebar/2, y, "Terima Kasih & Hati-hati Berkendara")
+
+        y -= 2*cm
+        c.setFont("Helvetica", 9)
+        c.setFillColorRGB(0.4, 0.4, 0.4)
+        c.drawCentredString(lebar/2, y, f"Dicetak pada: {datetime.now().strftime('%d-%m-%Y %H:%M:%S')}")
+
+        c.save()
+        return nama_file
+    
+    except Exception as e:
+        return f"ERROR: {str(e)}"

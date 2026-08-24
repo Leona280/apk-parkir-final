@@ -5,7 +5,7 @@ from koneksi import buat_koneksi
 from log_aktivitas import tampilkan_log
 from cetak_struk import cetak_struk
 from daftar_parkir import tampilkan_daftar
-from cetak_struk_masuk import cetak_struk_masuk
+from cetak_struk_masuk import cetak_tiket_masuk
 
 def buat_halaman_utama(aplikasi):
     aplikasi.clear_window()
@@ -110,6 +110,7 @@ def buat_halaman_utama(aplikasi):
                             (plat, jenis, warna, pemilik, aplikasi.id_user))
                 id_kendaraan = kuror.lastrowid
 
+                waktu_sekarang = datetime.now()
                 waktu_masuk = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 id_tarif = tarif_list[jenis.capitalize()]["id_tarif"]
                 kuror.execute("INSERT INTO tb_transaksi (id_kendaraan, waktu_masuk, id_tarif, status, id_user, id_area) VALUES (%s, %s, %s, 'masuk', %s, %s)",
@@ -121,13 +122,16 @@ def buat_halaman_utama(aplikasi):
                 db.commit()
                 messagebox.showinfo("Berhasil", f"Kendaraan Masuk!\nPlat: {plat}\nWaktu: {waktu_masuk}")
                 
-                rincian = f"""PLAT NOMOR: {plat}
-                            JENIS: {jenis.capitalize()}
-                            MASUK: {waktu_masuk.strftime('%d-%m-%Y %H:%M')}
-                            PEMILIK: {pemilik}"""
+                nama_area = cmb_area.get()
                 
-                if messagebox.askyesno("Cetak Struk", "Cetak struk masuk?"):
-                    cetak_struk_masuk(plat, jenis.capitalize(), waktu_masuk, area_pilih, pemilik)
+                file_tiket = cetak_tiket_masuk(
+                    plat_nomor=plat,
+                    jenis_kendaraan=cmb_jenis.get(),
+                    waktu_masuk=waktu_sekarang,
+                    area_parkir=nama_area
+                )
+                
+                messagebox.showinfo("Berhasil", f"Kendaraan Masuk!\n\nTiket Masuk sudah dibuat:\n{file_tiket}")
 
                 ent_plat.delete(0, "end")
                 ent_warna.delete(0, "end")
@@ -139,7 +143,7 @@ def buat_halaman_utama(aplikasi):
             finally:
                 kuror.close()
                 db.close()
-
+                
         def proses_keluar():
             plat = ent_plat.get().strip().upper()
             if not plat:
@@ -212,6 +216,10 @@ def buat_halaman_utama(aplikasi):
             ctk.CTkButton(isi, text="KENDARAAN MASUK", 
                         fg_color="#3b8ed0", width=300, height=40, corner_radius=10,
                         command=proses_masuk).grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 5))
+            
+            ctk.CTkButton(isi, text="EDIT DATA KENDARAAN",
+                        fg_color="#ffc107", hover_color="#e0a800", width=300, height=40, corner_radius=10,
+                        command=lambda: buka_jendela_edit(aplikasi)).grid(row=6, column=0, columnspan=2, padx=10, pady=(5, 10))
 
             ctk.CTkButton(frm_btn, text="DAFTAR PARKIR", 
                         fg_color="#fd7e14", hover_color="#e86e05", width=280, height=50, corner_radius=10, 
@@ -220,6 +228,170 @@ def buat_halaman_utama(aplikasi):
             ctk.CTkButton(frm_btn, text="LOG AKTIVITAS", 
                         fg_color="#00b894", hover_color="#00a085", width=280, height=50, corner_radius=10,
                         command=lambda: tampilkan_log(aplikasi)).pack(side="left", pady=5, padx=20)
+            
+            def buka_jendela_edit(induk):
+                jendela_edit = ctk.CTkToplevel(induk)
+                jendela_edit.title("EDIT DATA KENDARAAN")
+                jendela_edit.geometry("600x550")
+
+                id_transaksi_terpilih = ctk.StringVar(value="")
+
+                frm_atas = ctk.CTkFrame(jendela_edit, fg_color="transparent")
+                frm_atas.pack(fill="x", padx=25, pady=(25, 10))
+
+                ctk.CTkLabel(frm_atas, text="Masukkan Plat Nomor yang Ingin Diubah:", 
+                            font=("Arial", 12, "bold")).grid(row=0, column=0, sticky="w")
+
+                ctk.CTkButton(frm_atas, text="BATAL", 
+                            fg_color="#dc3545", hover_color="#c82333",
+                            width=90, height=30, corner_radius=8,
+                            command=jendela_edit.destroy).grid(row=0, column=1, sticky="e")
+
+                frm_atas.grid_columnconfigure(1, weight=1)
+
+                frm_cari = ctk.CTkFrame(jendela_edit, fg_color="transparent")
+                frm_cari.pack(fill="x", padx=25, pady=5)
+
+                ent_plat_edit = ctk.CTkEntry(frm_cari, placeholder_text="Contoh: KT 1234 AB", 
+                                            width=380, height=42)
+                ent_plat_edit.grid(row=0, column=0, padx=(0, 10))
+
+                def cari_data():
+                    plat = ent_plat_edit.get().strip().upper()
+                    if not plat:
+                        messagebox.showwarning("Peringatan", "Masukkan Plat Nomor!")
+                        return
+
+                    db = buat_koneksi()
+                    if not db: return
+                    kuror = db.cursor()
+
+                    try:
+                        kuror.execute("""
+                            SELECT t.id_parkir, k.plat_nomor, k.jenis_kendaraan, a.nama_area
+                            FROM tb_transaksi t
+                            JOIN tb_kendaraan k ON t.id_kendaraan = k.id_kendaraan
+                            JOIN tb_area_parkir a ON t.id_area = a.id_area
+                            WHERE k.plat_nomor = %s AND t.status = 'masuk'
+                            LIMIT 1
+                        """, (plat,))
+                        data = kuror.fetchone()
+
+                        if not data:
+                            messagebox.showerror("Tidak Ditemukan", "Kendaraan tidak ada atau sudah keluar!")
+                            return
+
+                        id_transaksi, plat_lama, jenis_lama, area_lama = data
+                        id_transaksi_terpilih.set(str(id_transaksi))
+                        ent_plat_baru.delete(0, "end")
+                        ent_plat_baru.insert(0, plat_lama)
+                        cmb_jenis_edit.set(jenis_lama.capitalize())
+                        cmb_area_edit.set(area_lama)
+                        messagebox.showinfo("Ditemukan", "Data ditemukan! Silakan ubah lalu simpan.")
+
+                    except Exception as e:
+                        messagebox.showerror("Error", f"Gagal mencari data!\n{e}")
+                    finally:
+                        kuror.close()
+                        db.close()
+
+                btn_cari = ctk.CTkButton(frm_cari, text="CARI", 
+                            fg_color="#17a2b8", hover_color="#138496",
+                            width=100, height=36, corner_radius=10,
+                            command=cari_data)
+                btn_cari.grid(row=0, column=1)
+
+                frm_edit = ctk.CTkFrame(jendela_edit)
+                frm_edit.pack(pady=20, padx=30, fill="x")
+
+                lbl_width = 150
+                inp_width = 320
+
+                ctk.CTkLabel(frm_edit, text="Plat Nomor Baru:", width=lbl_width, anchor="w").grid(row=0, column=0, padx=10, pady=10, sticky="w")
+                ent_plat_baru = ctk.CTkEntry(frm_edit, width=inp_width, height=38)
+                ent_plat_baru.grid(row=0, column=1, padx=10, pady=10)
+
+                ctk.CTkLabel(frm_edit, text="Jenis Kendaraan:", width=lbl_width, anchor="w").grid(row=1, column=0, padx=10, pady=10, sticky="w")
+                cmb_jenis_edit = ctk.CTkComboBox(frm_edit, values=jenis_opsi, width=inp_width, height=38)
+                cmb_jenis_edit.grid(row=1, column=1, padx=10, pady=10)
+
+                ctk.CTkLabel(frm_edit, text="Area Parkir:", width=lbl_width, anchor="w").grid(row=2, column=0, padx=10, pady=10, sticky="w")
+
+                daftar_area = []
+                db = buat_koneksi()
+                if db:
+                    kuror = db.cursor()
+                    try:
+                        kuror.execute("SELECT nama_area FROM tb_area_parkir ORDER BY nama_area")
+                        hasil = kuror.fetchall()
+                        daftar_area = [baris[0] for baris in hasil]
+                    except Exception as e:
+                        print("Gagal ambil area:", e)
+                    finally:
+                        kuror.close()
+                        db.close()
+
+                cmb_area_edit = ctk.CTkComboBox(frm_edit, values=daftar_area, width=inp_width, height=38)
+                cmb_area_edit.grid(row=2, column=1, padx=10, pady=10)
+
+                def simpan_perubahan():
+                    id_transaksi = id_transaksi_terpilih.get()
+                    plat_baru = ent_plat_baru.get().strip().upper()
+                    jenis_baru = cmb_jenis_edit.get().lower()
+                    area_baru = cmb_area_edit.get()
+
+                    if not id_transaksi:
+                        messagebox.showwarning("Peringatan", "Cari data dulu!")
+                        return
+                    if not plat_baru:
+                        messagebox.showwarning("Peringatan", "Plat Nomor tidak boleh kosong!")
+                        return
+
+                    db = buat_koneksi()
+                    if not db: return
+                    kuror = db.cursor()
+
+                    try:
+                        kuror.execute("SELECT id_kendaraan, id_area FROM tb_transaksi WHERE id_parkir = %s", (id_transaksi,))
+                        id_kendaraan, id_area_lama = kuror.fetchone()
+
+                        kuror.execute("SELECT id_area FROM tb_area_parkir WHERE nama_area = %s", (area_baru,))
+                        hasil_area = kuror.fetchone()
+                        id_area_baru = hasil_area[0] if hasil_area else id_area_lama
+
+                        kuror.execute("""
+                                    UPDATE tb_kendaraan 
+                                    SET plat_nomor = %s, jenis_kendaraan = %s 
+                                    WHERE id_kendaraan = %s
+                        """, (plat_baru, jenis_baru, id_kendaraan))
+
+                        kuror.execute("""
+                                    UPDATE tb_transaksi 
+                                    SET id_area = %s
+                                    WHERE id_parkir = %s
+                        """, (id_area_baru, id_transaksi))
+
+                        kuror.execute("INSERT INTO tb_log_aktivitas (id_user, aktivitas, waktu_aktivitas) VALUES (%s, %s, NOW())",
+                                    (aplikasi.id_user, f"Edit Data: {plat_baru}"))
+
+                        db.commit()
+                        messagebox.showinfo("Berhasil", "Data berhasil diperbarui!")
+                        jendela_edit.destroy()
+
+                    except Exception as e:
+                        db.rollback()
+                        messagebox.showerror("Error", f"Gagal menyimpan!\n{e}")
+                    finally:
+                        kuror.close()
+                        db.close()
+
+                frm_tombol = ctk.CTkFrame(jendela_edit, fg_color="transparent")
+                frm_tombol.pack(pady=(5, 20))
+
+                ctk.CTkButton(frm_tombol, text="SIMPAN PERUBAHAN", 
+                            fg_color="#28a745", hover_color="#218838",
+                            width=220, height=45, corner_radius=10,
+                            command=simpan_perubahan).grid(row=0, column=0, padx=10)
 
         elif aplikasi.role == "petugas":
             ctk.CTkButton(isi, text="KENDARAAN KELUAR", 
@@ -285,26 +457,28 @@ def buat_halaman_utama(aplikasi):
                     """)
                 elif jenis == "mingguan":
                     kuror.execute("""
-                        SELECT CONCAT(YEAR(waktu_masuk), ' - Minggu ', WEEK(waktu_masuk)) AS periode,
+                        SELECT 
+                            CONCAT(YEAR(waktu_masuk), ' - Minggu ', WEEK(waktu_masuk)) AS periode,
                             COUNT(*) AS jumlah,
                             COUNT(DISTINCT id_kendaraan) AS kendaraan,
                             SUM(biaya_total) AS pendapatan
                         FROM tb_transaksi
                         WHERE status = 'keluar'
-                        GROUP BY YEAR(waktu_masuk), WEEK(waktu_masuk)
-                        ORDER BY waktu_masuk DESC
+                        GROUP BY periode
+                        ORDER BY periode DESC
                         LIMIT 12
                     """)
                 elif jenis == "bulanan":
                     kuror.execute("""
-                        SELECT CONCAT(YEAR(waktu_masuk), ' - ', MONTHNAME(waktu_masuk)) AS periode,
+                        SELECT 
+                            CONCAT(YEAR(waktu_masuk), ' - ', MONTHNAME(waktu_masuk)) AS periode,
                             COUNT(*) AS jumlah,
                             COUNT(DISTINCT id_kendaraan) AS kendaraan,
                             SUM(biaya_total) AS pendapatan
                         FROM tb_transaksi
                         WHERE status = 'keluar'
-                        GROUP BY YEAR(waktu_masuk), MONTH(waktu_masuk)
-                        ORDER BY waktu_masuk DESC
+                        GROUP BY periode
+                        ORDER BY periode DESC
                         LIMIT 12
                     """)
 
@@ -335,7 +509,7 @@ def buat_halaman_utama(aplikasi):
                     tabel.insert("", "end", values=("Belum Ada Data", "-", "-", "-"))
 
             except Exception as e:
-                tabel.insert("", "end", values=(f"Error", "", "", ""))
+                tabel.insert("", "end", values=(f"Error: {str(e)}", "", "", ""))
             finally:
                 kuror.close()
                 db.close()
