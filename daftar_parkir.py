@@ -12,12 +12,6 @@ def tampilkan_daftar(induk):
     frm_atas.pack(fill="x", padx=15, pady=5)
 
     ctk.CTkLabel(frm_atas, text="DAFTAR TRANSAKSI PARKIR", font=("Arial", 14, "bold")).pack(side="left")
-    
-    btn_refresh = ctk.CTkButton(frm_atas, text="Refresh", 
-                                width=30, height=30, corner_radius=8,
-                                fg_color="#6c5ce7", hover_color="#5b4cdb")
-    btn_refresh.pack(side="right", pady=5)
-
 
     cols = ("ID", "Plat Nomor", "Jenis", "Waktu Masuk", "Waktu Keluar", "Biaya", "Status")
     tabel = ttk.Treeview(jendela, columns=cols, show="headings", height=15)
