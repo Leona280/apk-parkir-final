@@ -214,19 +214,19 @@ def buat_halaman_utama(aplikasi):
 
         if aplikasi.role == "admin":
             ctk.CTkButton(isi, text="KENDARAAN MASUK", 
-                        fg_color="#3b8ed0", width=300, height=40, corner_radius=10,
+                        fg_color="#4B72AD", width=300, height=40, corner_radius=10,
                         command=proses_masuk).grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 5))
             
             ctk.CTkButton(isi, text="EDIT DATA KENDARAAN",
-                        fg_color="#ffc107", hover_color="#e0a800", width=300, height=40, corner_radius=10,
+                        fg_color="#46897C", hover_color="#356B5F", width=300, height=40, corner_radius=10,
                         command=lambda: buka_jendela_edit(aplikasi)).grid(row=6, column=0, columnspan=2, padx=10, pady=(5, 10))
 
             ctk.CTkButton(frm_btn, text="DAFTAR PARKIR", 
-                        fg_color="#fd7e14", hover_color="#e86e05", width=280, height=50, corner_radius=10, 
+                        fg_color="#5A79A8", hover_color="#466087", width=280, height=50, corner_radius=10, 
                         command=lambda: tampilkan_daftar(aplikasi)).pack(side="left", pady=5, padx=20)
 
             ctk.CTkButton(frm_btn, text="LOG AKTIVITAS", 
-                        fg_color="#00b894", hover_color="#00a085", width=280, height=50, corner_radius=10,
+                        fg_color="#7267A3", hover_color="#5A5082", width=280, height=50, corner_radius=10,
                         command=lambda: tampilkan_log(aplikasi)).pack(side="left", pady=5, padx=20)
             
             def buka_jendela_edit(induk):
@@ -296,7 +296,7 @@ def buat_halaman_utama(aplikasi):
                         db.close()
 
                 btn_cari = ctk.CTkButton(frm_cari, text="CARI", 
-                            fg_color="#17a2b8", hover_color="#138496",
+                            fg_color="#4B72AD", hover_color="#3A5A8A",
                             width=100, height=36, corner_radius=10,
                             command=cari_data)
                 btn_cari.grid(row=0, column=1)
@@ -389,17 +389,17 @@ def buat_halaman_utama(aplikasi):
                 frm_tombol.pack(pady=(5, 20))
 
                 ctk.CTkButton(frm_tombol, text="SIMPAN PERUBAHAN", 
-                            fg_color="#28a745", hover_color="#218838",
+                            fg_color="#46897C", hover_color="#356B5F",
                             width=220, height=45, corner_radius=10,
                             command=simpan_perubahan).grid(row=0, column=0, padx=10)
 
         elif aplikasi.role == "petugas":
             ctk.CTkButton(isi, text="KENDARAAN KELUAR", 
-                        fg_color="#3b8ed0", width=300, height=40, corner_radius=10,
+                        fg_color="#4B72AD", width=300, height=40, corner_radius=10,
                         command=proses_keluar).grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 5))
             
             ctk.CTkButton(frm_btn, text="DAFTAR PARKIR", 
-                                    fg_color="#fd7e14", hover_color="#e86e05", width=280, height=50, corner_radius=10, 
+                                    fg_color="#5A79A8", hover_color="#466087", width=280, height=50, corner_radius=10, 
                                     command=lambda: tampilkan_daftar(aplikasi)).pack(side="left", pady=5, padx=20)
 
     else:
