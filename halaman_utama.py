@@ -6,6 +6,12 @@ from log_aktivitas import tampilkan_log
 from cetak_struk import cetak_struk
 from daftar_parkir import tampilkan_daftar
 from cetak_struk_masuk import cetak_tiket_masuk
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+import xlsxwriter
+from datetime import datetime
 
 def buat_halaman_utama(aplikasi):
     aplikasi.clear_window()
@@ -430,8 +436,62 @@ def buat_halaman_utama(aplikasi):
         tabel.column("Total Pendapatan", width=200, anchor="center")
 
         tabel.pack(fill="both", expand=True)
+        
+        data_ekspor = []
+        
+        def simpan_pdf():
+            if not data_ekspor:
+                messagebox.showwarning("Peringatan", "Tidak ada data untuk disimpan!")
+                return
+            
+            nama_file = f"rekap_{var_periode.get()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+            dokumen = SimpleDocTemplate("rekap_laporan-pdf/" + nama_file, pagesize=A4)
+            elemen = []
+            gaya = getSampleStyleSheet()
+            
+            elemen.append(Paragraph(f"REKAPITULASI TRANSAKSI - {var_periode.get().upper()}", gaya["Title"]))
+            elemen.append(Paragraph(f"Dicetak: {datetime.now().strftime('%d-%m-%Y %H:%M:%S')}", gaya["Normal"]))
+            elemen.append(Paragraph(" ", gaya["Normal"]))
+            
+            kepala = [["Periode", "Jumlah Transaksi", "Total Kendaraan", "Total Pendapatan"]]
+            isi = kepala + [[str(sel) for sel in baris] for baris in data_ekspor]
+            
+            tabel_pdf = Table(isi)
+            tabel_pdf.setStyle(TableStyle([
+                ("BACKGROUND", (0,0), (-1,0), colors.darkblue),
+                ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+                ("ALIGN", (0,0), (-1,-1), "CENTER"),
+                ("GRID", (0,0), (-1,-1), 1, colors.black),
+                ("FONTSIZE", (0,0), (-1,-1), 10),
+                ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.lightgrey])
+            ]))
+            elemen.append(tabel_pdf)
+            dokumen.build(elemen)
+            messagebox.showinfo("Berhasil", f"Tersimpan:\nrekap_laporan-pdf/{nama_file}")
+            
+        def simpan_excel():
+            if not data_ekspor:
+                messagebox.showwarning("Peringatan", "Tidak ada data untuk disimpan!")
+                return
+            
+            nama_file = f"rekap_{var_periode.get()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+            lokasi = "rekap_laporan-excel/" + nama_file
+            buku = xlsxwriter.Workbook(lokasi)
+            lembar = buku.add_worksheet()
+            
+            judul = ["periode", "Jumlah Transaksi", "Total Kendaraan", "Total Pendapatan"]
+            lembar.write_row(0, 0, judul)
+            
+            baris = 1
+            for isi_baris in data_ekspor:
+                lembar.write_row(baris, 0, isi_baris)
+                baris += 1
+                
+            buku.close()
+            messagebox.showinfo("Berhasil", f"Tersimpan:\nrekap_laporan-excel/{nama_file}")
 
         def muat_rekap():
+            nonlocal data_ekspor
             for baris in tabel.get_children():
                 tabel.delete(baris)
 
@@ -486,6 +546,7 @@ def buat_halaman_utama(aplikasi):
                 total_pendapatan = 0
                 total_transaksi = 0
                 total_kendaraan = 0
+                data_ekspor = []
 
                 if data:
                     for baris in data:
@@ -493,12 +554,15 @@ def buat_halaman_utama(aplikasi):
                         total_pendapatan += pendapatan
                         total_transaksi += baris[1]
                         total_kendaraan += baris[2]
+                        data_ekspor.append([baris[0], baris[1], baris[2], pendapatan])
                         tabel.insert("", "end", values=(
                             str(baris[0]),
                             str(baris[1]),
                             str(baris[2]),
                             f"Rp {pendapatan:,}"
                         ))
+                    
+                    data_ekspor.append(["TOTAL SEMUA", total_transaksi, total_kendaraan, total_pendapatan])
                     tabel.insert("", "end", values=(
                         "TOTAL SEMUA",
                         str(total_transaksi),
@@ -513,6 +577,15 @@ def buat_halaman_utama(aplikasi):
             finally:
                 kuror.close()
                 db.close()
+            
+            frm_tombol = ctk.CTkFrame(aplikasi, fg_color="transparent")
+            frm_tombol.pack(pady=10)
+            
+            ctk.CTkButton(frm_tombol, text="Simpan ke PDF", width=180, height=40, fg_color="#254273", hover_color="#1A3057",
+                        command=simpan_pdf).pack(side="left", padx=10)
+            ctk.CTkButton(frm_tombol, text="Simpan ke Excel", width=180, height=40, fg_color="#20594E", hover_color="#164239",
+                        command=simpan_excel).pack(side="left", padx=10)
+            
 
         muat_rekap()
         var_periode.trace("w", lambda *args: muat_rekap())

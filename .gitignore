@@ -16,3 +16,7 @@ Thumbs.db
 # File database / konfigurasi rahasia
 *.sql.bak
 .env
+
+# Rekap Laporan
+rekap_laporan-pdf/
+rekap_laporan-excel/
