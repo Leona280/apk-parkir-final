@@ -571,7 +571,6 @@ def buat_halaman_utama(aplikasi):
                     ))
                 else:
                     tabel.insert("", "end", values=("Belum Ada Data", "-", "-", "-"))
-
             except Exception as e:
                 tabel.insert("", "end", values=(f"Error: {str(e)}", "", "", ""))
             finally:
