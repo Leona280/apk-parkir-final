@@ -588,3 +588,10 @@ def buat_halaman_utama(aplikasi):
 
         muat_rekap()
         var_periode.trace("w", lambda *args: muat_rekap())
+        
+        frm_btn = ctk.CTkFrame(aplikasi, fg_color="transparent")
+        frm_btn.pack(pady=15, padx=20)
+        
+        ctk.CTkButton(frm_btn, text="LOG AKTIVITAS", 
+                                fg_color="#7267A3", hover_color="#5A5082", width=280, height=50, corner_radius=10,
+                                command=lambda: tampilkan_log(aplikasi)).pack(side="left", pady=5, padx=20)
