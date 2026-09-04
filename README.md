@@ -20,7 +20,7 @@ Laporan PDF — ReportLab
 Laporan Excel — XlsxWriter
 
 ## Langkah Instalasi 
-*Langkah Pertama* — Pastikan **Python 3** sudah terpasang di komputermu.
+*Langkah Pertama* — Pastikan **Python 3** sudah terpasang di komputermu (https://www.python.org/downloads/)
 *Langkah Kedua* — Instal pustaka yang dibutuhkan
 Buka **Terminal/CMD**, lalu jalankan perintah berikut satu per satu:
 '''bash
