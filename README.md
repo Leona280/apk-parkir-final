@@ -1,6 +1,6 @@
 # Aplikasi Sistem Informasi Pengelolaan Parkir
 
-Aplikasi berbasis desktop untuk pencatatan transaksi parkir, perhitungan biaya otomatis, dan laporan rekapitulasi pendapatan. Dibuat menggunakan **Python** dengan antarmuka **CustomTkinter** dan basis data **MySWL**.
+Aplikasi berbasis desktop untuk pencatatan transaksi parkir, perhitungan biaya otomatis, dan laporan rekapitulasi pendapatan. Dibuat menggunakan **Python** dengan antarmuka **CustomTkinter** dan basis data **MySQL**.
 
 ## Fitur Utama
 - **Sistem Login** — Pembagian hak akses: Admin, Petugas, Pemilik
