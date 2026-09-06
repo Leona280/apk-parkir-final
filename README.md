@@ -3,7 +3,7 @@
 Aplikasi berbasis desktop untuk pencatatan transaksi parkir, perhitungan biaya otomatis, dan laporan rekapitulasi pendapatan. Dibuat menggunakan **Python** dengan antarmuka **CustomTkinter** dan basis data **MySWL**.
 
 ## Fitur Utama
-- **Sistem Login** — Pembagian hak akses: Admin, Petugas, Pemilik</p>
+- **Sistem Login** — Pembagian hak akses: Admin, Petugas, Pemilik
 - **Kendaraan Masuk** — Input data kendaraan oleh Admin
 - **Kendaraan Keluar** — Cari nomor plat -> hitung biaya otomatis -> cetak struk
 - **Edit Data** — Ubah data transaksi parkir
