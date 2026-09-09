@@ -9,7 +9,7 @@ class AplikasiParkir(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("SISTEM INFORMASI PARKIR")
-        self.geometry("650x626")
+        self.state('zoomed')
 
         self.id_user = ""
         self.nama_pengguna = ""
