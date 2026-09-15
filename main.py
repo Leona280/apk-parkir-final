@@ -2,7 +2,7 @@ import customtkinter as ctk
 from halaman_login import buat_halaman_login
 from halaman_utama import buat_halaman_utama
 
-ctk.set_appearance_mode("dark")
+ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
 class AplikasiParkir(ctk.CTk):
@@ -10,11 +10,12 @@ class AplikasiParkir(ctk.CTk):
         super().__init__()
         self.title("SISTEM INFORMASI PARKIR")
         self.state('zoomed')
-
+        self.configure(fg_color="#F0F4F8") 
+        
         self.id_user = ""
         self.nama_pengguna = ""
         self.role = ""
-
+        
         self.tampilkan_halaman_login()
 
     def tampilkan_halaman_login(self):
