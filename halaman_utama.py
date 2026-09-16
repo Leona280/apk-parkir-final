@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox, ttk
 from datetime import datetime
+import os
 from koneksi import buat_koneksi
 from log_aktivitas import tampilkan_log
 from cetak_struk import cetak_struk
@@ -12,11 +13,66 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import xlsxwriter
 
+FILE_CATATAN_BERSIH = "catatan_pembersihan.txt"
+
+def hapus_data_sudah_keluar():
+    """Hapus semua transaksi yang sudah berstatus 'keluar'"""
+    db = buat_koneksi()
+    if not db:
+        return
+    try:
+        kuror = db.cursor()
+        kuror.execute("DELETE FROM tb_transaksi WHERE status = 'keluar'")
+        db.commit()
+        print(f"Data transaksi yang sudah keluar dihapus: {kuror.rowcount} baris")
+    except Exception as e:
+        print("Gagal hapus transaksi:", e)
+    finally:
+        kuror.close()
+        db.close()
+
+def hapus_log_lama():
+    """Hapus log aktivitas lebih lama dari 7 hari"""
+    db = buat_koneksi()
+    if not db:
+        return
+    try:
+        kuror = db.cursor()
+        kuror.execute("""
+            DELETE FROM tb_log_aktivitas
+            WHERE waktu_aktivitas < DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        """)
+        db.commit()
+        print(f"Log lama dihapus: {kuror.rowcount} baris")
+    except Exception as e:
+        print("Gagal hapus log:", e)
+    finally:
+        kuror.close()
+        db.close()
+
+def cek_dan_jalankan_pembersihan():
+    """Cek jadwal — jalankan pembersihan jika sudah lewat 7 hari"""
+    terakhir = None
+    if os.path.exists(FILE_CATATAN_BERSIH):
+        with open(FILE_CATATAN_BERSIH, "r") as f:
+            isi = f.read().strip()
+            if isi:
+                terakhir = datetime.strptime(isi, "%Y-%m-%d").date()
+    
+    hari_ini = datetime.now().date()
+    
+    if not terakhir or (hari_ini - terakhir).days >= 7:
+        print("\n🧹 Menjalankan pembersihan otomatis...")
+        hapus_data_sudah_keluar()
+        hapus_log_lama()
+        with open(FILE_CATATAN_BERSIH, "w") as f:
+            f.write(hari_ini.strftime("%Y-%m-%d"))
+        print("Pembersihan selesai!\n")
 
 def buat_halaman_utama(aplikasi):
+    cek_dan_jalankan_pembersihan()
     aplikasi.clear_window()
 
-    # === BARIS ATAS ===
     baris_atas = ctk.CTkFrame(aplikasi, fg_color="#F7FAFC")
     baris_atas.pack(fill="x", padx=20, pady=10)
     teks_info = f"{aplikasi.nama_pengguna} | Peran: {aplikasi.role} | {datetime.now().strftime('%d-%m-%Y %H:%M')}"
