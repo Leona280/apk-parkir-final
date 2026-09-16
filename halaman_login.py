@@ -5,16 +5,13 @@ from koneksi import buat_koneksi
 def buat_halaman_login(aplikasi):
     aplikasi.clear_window()
 
-    # === JUDUL ===
     judul = ctk.CTkLabel(aplikasi, text="LOGIN PETUGAS", 
-                         font=("Arial", 26, "bold"), text_color="#1A202C")
+                        font=("Arial", 26, "bold"), text_color="#1A202C")
     judul.pack(pady=(50, 25))
 
-    # === KOTAK — LATAR PUTIH ===
     kotak = ctk.CTkFrame(aplikasi, width=420, corner_radius=12, fg_color="#FFFFFF")
     kotak.pack(pady=10, padx=20)
 
-    # === INPUT USERNAME ===
     lbl_user = ctk.CTkLabel(kotak, text="Nama Pengguna", 
                             font=("Arial", 12, "bold"), text_color="#2D3748")
     lbl_user.pack(pady=(25, 8))
@@ -23,16 +20,14 @@ def buat_halaman_login(aplikasi):
                             placeholder_text_color="#A0AEC0")
     ent_user.pack(pady=5)
 
-    # === INPUT PASSWORD ===
     lbl_pass = ctk.CTkLabel(kotak, text="Kata Sandi", 
-                             font=("Arial", 12, "bold"), text_color="#2D3748")
+                            font=("Arial", 12, "bold"), text_color="#2D3748")
     lbl_pass.pack(pady=(20, 8))
     ent_pass = ctk.CTkEntry(kotak, placeholder_text="Masukkan Kata Sandi", 
                             width=280, height=42, corner_radius=8, show="•",
                             placeholder_text_color="#A0AEC0")
     ent_pass.pack(pady=5)
 
-    # === PROSES LOGIN ===
     def proses():
         user = ent_user.get().strip()
         sandi = ent_pass.get().strip()
@@ -65,9 +60,8 @@ def buat_halaman_login(aplikasi):
             kuror.close()
             db.close()
 
-    # === TOMBOL MASUK ===
     btn_login = ctk.CTkButton(kotak, text="MASUK", width=280, height=42, 
-                              corner_radius=8, font=("Arial", 13, "bold"),
-                              fg_color="#3182CE", hover_color="#2B6CB0",
-                              command=proses)
+                            corner_radius=8, font=("Arial", 13, "bold"),
+                            fg_color="#3182CE", hover_color="#2B6CB0",
+                            command=proses)
     btn_login.pack(pady=(25, 30), padx=30)

@@ -11,15 +11,12 @@ def cetak_struk(plat, jenis, masuk, keluar, lama, tarif, total):
     path_lengkap = os.path.join(nama_folder, nama_file)
     
     c = canvas.Canvas(path_lengkap)
-    lebar_halaman = 595       # Lebar A4
-    lebar_blok = 320           # Lebar area teks agar rapi
-    posisi_mulai = (lebar_halaman - lebar_blok) / 2  # Mulai dari sini agar blok di TENGAH
-
-    # === JUDUL DI TENGAH ===
+    lebar_halaman = 595      
+    lebar_blok = 320           
+    posisi_mulai = (lebar_halaman - lebar_blok) / 2
     c.setFont("Helvetica-Bold", 16)
     c.drawCentredString(lebar_halaman/2, 780, "========== STRUK PARKIR ==========")
 
-    # === ISI — BLOK DI TENGAH TAPI RATA KIRI ===
     c.setFont("Helvetica", 12)
     y = 750
 

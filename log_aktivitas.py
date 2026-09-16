@@ -25,21 +25,18 @@ def tampilkan_log(induk):
     kuror.close()
     db.close()
 
-    # === JENDELA — WARNA LATAR SAMA ===
     jendela = ctk.CTkToplevel(induk)
     jendela.title("LOG AKTIVITAS SISTEM")
     jendela.geometry("750x520")
-    jendela.configure(fg_color="#F0F4F8")  # ← WARNA LATAR SAMA!
-
-    # === JUDUL ===
+    jendela.configure(fg_color="#F0F4F8")  
+    
     ctk.CTkLabel(
         jendela,
         text="RIWAYAT AKTIVITAS PENGGUNA",
         font=("Arial", 18, "bold"),
-        text_color="#2D3748"  # ← TULISAN GELAP JELAS
+        text_color="#2D3748" 
     ).pack(pady=(25, 20))
 
-    # === CARD TABEL ===
     frm_card = ctk.CTkFrame(
         jendela,
         fg_color="#FFFFFF",
@@ -55,13 +52,11 @@ def tampilkan_log(induk):
     tabel.heading("Aktivitas", text="Aktivitas")
     tabel.heading("Waktu", text="Waktu")
 
-    # === PERLEBAR KOLOM & PERBESAR TULISAN ===
     tabel.column("ID", width=60, anchor="center")
     tabel.column("Pengguna", width=180, anchor="center")
     tabel.column("Aktivitas", width=320, anchor="center")
     tabel.column("Waktu", width=180, anchor="center")
 
-    # === PERBESAR TULISAN DI TABEL ===
     style = ttk.Style()
     style.configure("Treeview.Heading", font=("Arial", 13, "bold"))
     style.configure("Treeview", font=("Arial", 11), rowheight=32)

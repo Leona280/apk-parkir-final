@@ -68,12 +68,9 @@ def buat_halaman_utama(aplikasi):
         frm_btn = ctk.CTkFrame(aplikasi, fg_color="transparent")
         frm_btn.pack(pady=15, padx=20)
 
-        # ======================================
-        # HALAMAN ADMIN
-        # ======================================
         if aplikasi.role == "admin":
-            ctk.CTkLabel(isi, text="📊 DASHBOARD ADMIN",
-                         font=("Arial", 18, "bold"), text_color="#2B6CB0").grid(row=0, column=0, columnspan=2, pady=(15, 20))
+            ctk.CTkLabel(isi, text="DASHBOARD ADMIN",
+                        font=("Arial", 18, "bold"), text_color="#2B6CB0").grid(row=0, column=0, columnspan=2, pady=(15, 20))
             db = buat_koneksi()
             parkir_masuk = 0
             transaksi_hari_ini = 0
@@ -93,7 +90,7 @@ def buat_halaman_utama(aplikasi):
                     jumlah_area = kuror.fetchone()[0]
                     kuror.execute("""
                         SELECT t.id_parkir, k.plat_nomor, k.jenis_kendaraan,
-                               t.waktu_masuk, a.nama_area
+                            t.waktu_masuk, a.nama_area
                         FROM tb_transaksi t
                         JOIN tb_kendaraan k ON t.id_kendaraan = k.id_kendaraan
                         JOIN tb_area_parkir a ON t.id_area = a.id_area
@@ -123,21 +120,21 @@ def buat_halaman_utama(aplikasi):
             buat_kotak_info(frm_info, "Pendapatan Hari Ini", f"Rp {pendapatan_hari_ini:,}", "#EBF8FF", "#2B6CB0")
             buat_kotak_info(frm_info, "Jumlah Area", jumlah_area, "#FAF5FF", "#553C9A")
 
-            ctk.CTkLabel(isi, text="🔧 KELOLA DATA",
-                         font=("Arial", 13, "bold"), text_color="#2D3748").grid(row=2, column=0, columnspan=2, pady=(0, 8))
-            ctk.CTkButton(isi, text="🅿️ KELOLA AREA PARKIR",
-                          fg_color="#3182CE", hover_color="#2B6CB0",
-                          width=275, height=42, corner_radius=12,
-                          font=("Arial", 12, "bold"),
-                          command=kelola_area_parkir).grid(row=3, column=0, padx=(10, 6), pady=(0, 10))
-            ctk.CTkButton(isi, text="💰 KELOLA TARIF PARKIR",
-                          fg_color="#805AD5", hover_color="#6B46C1",
-                          width=275, height=42, corner_radius=12,
-                          font=("Arial", 12, "bold"),
-                          command=kelola_tarif_parkir).grid(row=3, column=1, padx=(6, 10), pady=(0, 10))
+            ctk.CTkLabel(isi, text="KELOLA DATA",
+                        font=("Arial", 13, "bold"), text_color="#2D3748").grid(row=2, column=0, columnspan=2, pady=(0, 8))
+            ctk.CTkButton(isi, text="KELOLA AREA PARKIR",
+                        fg_color="#3182CE", hover_color="#2B6CB0",
+                        width=275, height=42, corner_radius=12,
+                        font=("Arial", 12, "bold"),
+                        command=kelola_area_parkir).grid(row=3, column=0, padx=(10, 6), pady=(0, 10))
+            ctk.CTkButton(isi, text="KELOLA TARIF PARKIR",
+                        fg_color="#805AD5", hover_color="#6B46C1",
+                        width=275, height=42, corner_radius=12,
+                        font=("Arial", 12, "bold"),
+                        command=kelola_tarif_parkir).grid(row=3, column=1, padx=(6, 10), pady=(0, 10))
 
-            ctk.CTkLabel(isi, text="🚗 DAFTAR KENDARAAN SEDANG PARKIR",
-                         font=("Arial", 13, "bold"), text_color="#2D3748").grid(row=4, column=0, columnspan=2, pady=(5, 8))
+            ctk.CTkLabel(isi, text=" DAFTAR KENDARAAN SEDANG PARKIR",
+                        font=("Arial", 13, "bold"), text_color="#2D3748").grid(row=4, column=0, columnspan=2, pady=(5, 8))
             frm_header = ctk.CTkFrame(isi, fg_color="#EBF8FF", corner_radius=10)
             frm_header.grid(row=5, column=0, columnspan=2, padx=15, pady=(0, 0), sticky="nsew")
             ctk.CTkLabel(frm_header, text="Plat Nomor", font=("Arial", 11, "bold"), width=150, text_color="#2C5282").pack(side="left", padx=10, pady=8)
@@ -161,16 +158,13 @@ def buat_halaman_utama(aplikasi):
                     ctk.CTkLabel(baris, text=waktu_str, font=("Arial", 10), width=180, text_color="#2D3748").pack(side="left", padx=10, pady=6)
                     ctk.CTkLabel(baris, text=area, font=("Arial", 10), width=150, text_color="#2D3748").pack(side="left", padx=10, pady=6)
                     ctk.CTkButton(baris, text="EDIT", width=60, height=28, corner_radius=6,
-                                  fg_color="#38A169", hover_color="#2F855A",
-                                  font=("Arial", 10, "bold"),
-                                  command=lambda pid=id_parkir: buka_jendela_edit(aplikasi, pid)).pack(side="left", padx=10, pady=6)
+                                fg_color="#38A169", hover_color="#2F855A",
+                                font=("Arial", 10, "bold"),
+                                command=lambda pid=id_parkir: buka_jendela_edit(aplikasi, pid)).pack(side="left", padx=10, pady=6)
             else:
                 ctk.CTkLabel(frm_scroll, text="Tidak ada kendaraan yang sedang parkir",
-                             font=("Arial", 12), text_color="#718096").pack(pady=30)
+                            font=("Arial", 12), text_color="#718096").pack(pady=30)
 
-        # ======================================
-        # HALAMAN PETUGAS
-        # ======================================
         elif aplikasi.role == "petugas":
             ctk.CTkLabel(isi, text="Plat Nomor Kendaraan", width=lbl_width, anchor="w", text_color="#2D3748", font=("Arial", 12)).grid(row=0, column=0, padx=10, pady=8, sticky="w")
             ent_plat = ctk.CTkEntry(isi, placeholder_text="Contoh: KT 1234 AB", width=inp_width, height=38, placeholder_text_color="#A0AEC0")
@@ -233,7 +227,7 @@ def buat_halaman_utama(aplikasi):
                     """, (aplikasi.id_user, f"Kendaraan Masuk: {plat}", waktu_masuk))
 
                     db.commit()
-                    messagebox.showinfo("Berhasil", f"✅ Kendaraan Masuk!\nPlat: {plat}\nWaktu: {waktu_masuk}")
+                    messagebox.showinfo("Berhasil", f" Kendaraan Masuk!\nPlat: {plat}\nWaktu: {waktu_masuk}")
 
                     nama_area = cmb_area.get()
                     file_tiket = cetak_tiket_masuk(
@@ -298,12 +292,12 @@ def buat_halaman_utama(aplikasi):
                     db.commit()
 
                     rincian = f"""PLAT NOMOR: {plat}
-JENIS: {jenis.capitalize()}
-MASUK: {waktu_masuk.strftime('%d-%m-%Y %H:%M')}
-KELUAR: {waktu_keluar.strftime('%d-%m-%Y %H:%M')}
-LAMA: {lama_jam} Jam
-TARIF PER JAM: Rp {tarif:,}
-TOTAL BAYAR: Rp {biaya:,}"""
+                                JENIS: {jenis.capitalize()}
+                                MASUK: {waktu_masuk.strftime('%d-%m-%Y %H:%M')}
+                                KELUAR: {waktu_keluar.strftime('%d-%m-%Y %H:%M')}
+                                LAMA: {lama_jam} Jam
+                                TARIF PER JAM: Rp {tarif:,}
+                                TOTAL BAYAR: Rp {biaya:,}"""
                     messagebox.showinfo("Pembayaran", rincian)
 
                     if messagebox.askyesno("Cetak Struk", "Cetak struk pembayaran?"):
@@ -320,19 +314,16 @@ TOTAL BAYAR: Rp {biaya:,}"""
                     kuror.close()
                     db.close()
 
-            ctk.CTkButton(isi, text="📥 KENDARAAN MASUK",
-                          fg_color="#3182CE", hover_color="#2B6CB0", width=300, height=40, corner_radius=10,
-                          command=proses_masuk).grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 5))
-            ctk.CTkButton(isi, text="📤 KENDARAAN KELUAR",
-                          fg_color="#38A169", hover_color="#2F855A", width=300, height=40, corner_radius=10,
-                          command=proses_keluar).grid(row=6, column=0, columnspan=2, padx=10, pady=5)
-            ctk.CTkButton(frm_btn, text="📋 DAFTAR PARKIR",
-                          fg_color="#718096", hover_color="#4A5568", width=280, height=50, corner_radius=10,
-                          command=lambda: tampilkan_daftar(aplikasi)).pack(side="left", pady=5, padx=20)
+            ctk.CTkButton(isi, text="KENDARAAN MASUK",
+                        fg_color="#3182CE", hover_color="#2B6CB0", width=300, height=40, corner_radius=10,
+                        command=proses_masuk).grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 5))
+            ctk.CTkButton(isi, text="KENDARAAN KELUAR",
+                        fg_color="#38A169", hover_color="#2F855A", width=300, height=40, corner_radius=10,
+                        command=proses_keluar).grid(row=6, column=0, columnspan=2, padx=10, pady=5)
+            ctk.CTkButton(frm_btn, text="DAFTAR PARKIR",
+                        fg_color="#718096", hover_color="#4A5568", width=280, height=50, corner_radius=10,
+                        command=lambda: tampilkan_daftar(aplikasi)).pack(side="left", pady=5, padx=20)
 
-    # ======================================
-    # HALAMAN OWNER
-    # ======================================
     else:
         frm_pilih = ctk.CTkFrame(aplikasi, fg_color="#F7FAFC")
         frm_pilih.pack(pady=5, padx=40, fill="x")
@@ -492,17 +483,13 @@ TOTAL BAYAR: Rp {biaya:,}"""
         frm_btn = ctk.CTkFrame(aplikasi, fg_color="transparent")
         frm_btn.pack(pady=15, padx=20)
         ctk.CTkButton(frm_btn, text="LOG AKTIVITAS",
-                      fg_color="#805AD5", hover_color="#6B46C1", width=280, height=50, corner_radius=10,
-                      command=lambda: tampilkan_log(aplikasi)).pack(side="left", pady=5, padx=20)
+                    fg_color="#805AD5", hover_color="#6B46C1", width=280, height=50, corner_radius=10,
+                    command=lambda: tampilkan_log(aplikasi)).pack(side="left", pady=5, padx=20)
 
-
-# ======================================
-# FUNGSI EDIT DATA
-# ======================================
 def buka_jendela_edit(induk, id_parkir=None):
     jendela_edit = ctk.CTkToplevel(induk)
     jendela_edit.title("EDIT DATA KENDARAAN")
-    jendela_edit.geometry("520x480")
+    jendela_edit.geometry("540x480")
     jendela_edit.resizable(False, False)
     id_transaksi_terpilih = ctk.StringVar(value="")
     data_terpilih = None
@@ -513,7 +500,7 @@ def buka_jendela_edit(induk, id_parkir=None):
                 kuror = db.cursor()
                 kuror.execute("""
                     SELECT t.id_parkir, k.plat_nomor, k.jenis_kendaraan,
-                           t.waktu_masuk, t.id_area, a.nama_area
+                        t.waktu_masuk, t.id_area, a.nama_area
                     FROM tb_transaksi t
                     JOIN tb_kendaraan k ON t.id_kendaraan = k.id_kendaraan
                     JOIN tb_area_parkir a ON t.id_area = a.id_area
@@ -526,8 +513,8 @@ def buka_jendela_edit(induk, id_parkir=None):
             finally:
                 db.close()
 
-    ctk.CTkLabel(jendela_edit, text="✏️ EDIT DATA KENDARAAN",
-                 font=("Arial", 16, "bold"), text_color="#2D3748").pack(pady=(20, 15))
+    ctk.CTkLabel(jendela_edit, text="EDIT DATA KENDARAAN",
+                font=("Arial", 16, "bold"), text_color="#2D3748").pack(pady=(20, 15))
     frm_isian = ctk.CTkFrame(jendela_edit, fg_color="#F7FAFC")
     frm_isian.pack(padx=30, pady=10, fill="x")
 
@@ -589,7 +576,7 @@ def buka_jendela_edit(induk, id_parkir=None):
                 WHERE t.id_parkir = %s
             """, (plat_baru, jenis_baru, id_area_baru, waktu_baru, id_p))
             db.commit()
-            messagebox.showinfo("Berhasil", "✅ Data kendaraan berhasil diperbarui!")
+            messagebox.showinfo("Berhasil", "Data kendaraan berhasil diperbarui!")
             jendela_edit.destroy()
         except Exception as e:
             db.rollback()
@@ -598,16 +585,12 @@ def buka_jendela_edit(induk, id_parkir=None):
             kuror.close()
             db.close()
 
-    ctk.CTkButton(jendela_edit, text="💾 SIMPAN PERUBAHAN",
-                  fg_color="#38A169", hover_color="#2F855A",
-                  width=260, height=45, corner_radius=12,
-                  font=("Arial", 13, "bold"),
-                  command=simpan_perubahan).pack(pady=(10, 25))
+    ctk.CTkButton(jendela_edit, text="SIMPAN PERUBAHAN",
+                fg_color="#38A169", hover_color="#2F855A",
+                width=260, height=45, corner_radius=12,
+                font=("Arial", 13, "bold"),
+                command=simpan_perubahan).pack(pady=(10, 25))
 
-
-# ======================================
-# KELOLA AREA PARKIR
-# ======================================
 def kelola_area_parkir():
     jendela = ctk.CTkToplevel()
     jendela.title("KELOLA AREA PARKIR")
@@ -635,7 +618,7 @@ def kelola_area_parkir():
         try:
             kuror.execute("INSERT INTO tb_area_parkir (nama_area, kapasitas) VALUES (%s, %s)", (nama_area, kapasitas))
             db.commit()
-            messagebox.showinfo("Berhasil", "✅ Area Parkir Berhasil Disimpan!")
+            messagebox.showinfo("Berhasil", "Area Parkir Berhasil Disimpan!")
             ent_nama.delete(0, "end")
             ent_kapasitas.delete(0, "end")
             muat_data()
@@ -665,7 +648,7 @@ def kelola_area_parkir():
         try:
             kuror.execute("DELETE FROM tb_area_parkir WHERE id_area = %s", (id_area,))
             db.commit()
-            messagebox.showinfo("Berhasil", "✅ Area Parkir Berhasil Dihapus!")
+            messagebox.showinfo("Berhasil", "Area Parkir Berhasil Dihapus!")
             muat_data()
         except Exception as e:
             db.rollback()
@@ -676,14 +659,14 @@ def kelola_area_parkir():
 
     frm_tombol = ctk.CTkFrame(frm_isian, fg_color="transparent")
     frm_tombol.grid(row=2, column=0, columnspan=2, pady=15)
-    ctk.CTkButton(frm_tombol, text="💾 SIMPAN AREA",
-                  fg_color="#38A169", hover_color="#2F855A",
-                  width=180, height=40, corner_radius=10,
-                  command=simpan_area).pack(side="left", padx=5)
-    ctk.CTkButton(frm_tombol, text="🗑️ HAPUS TERPILIH",
-                  fg_color="#E53E3E", hover_color="#C53030",
-                  width=180, height=40, corner_radius=10,
-                  command=hapus_area).pack(side="left", padx=5)
+    ctk.CTkButton(frm_tombol, text="SIMPAN AREA",
+                fg_color="#38A169", hover_color="#2F855A",
+                width=180, height=40, corner_radius=10,
+                command=simpan_area).pack(side="left", padx=5)
+    ctk.CTkButton(frm_tombol, text="HAPUS TERPILIH",
+                fg_color="#E53E3E", hover_color="#C53030",
+                width=180, height=40, corner_radius=10,
+                command=hapus_area).pack(side="left", padx=5)
 
     frm_tabel = ctk.CTkFrame(jendela, fg_color="#FFFFFF")
     frm_tabel.pack(pady=(5, 15), padx=25, fill="both", expand=True)
@@ -707,17 +690,13 @@ def kelola_area_parkir():
         db.close()
     muat_data()
 
-
-# ======================================
-# KELOLA TARIF PARKIR
-# ======================================
 def kelola_tarif_parkir():
     jendela = ctk.CTkToplevel()
     jendela.title("KELOLA TARIF PARKIR")
     jendela.geometry("500x480")
 
     ctk.CTkLabel(jendela, text="KELOLA TARIF PARKIR",
-                 font=("Arial", 16, "bold"), text_color="#2D3748").pack(pady=(20, 15))
+                font=("Arial", 16, "bold"), text_color="#2D3748").pack(pady=(20, 15))
     frm = ctk.CTkFrame(jendela, fg_color="#F7FAFC")
     frm.pack(pady=10, padx=40, fill="x")
 
@@ -756,7 +735,7 @@ def kelola_tarif_parkir():
         try:
             kuror.execute("UPDATE tb_tarif SET tarif_per_jam = %s WHERE id_tarif = %s", (tarif_baru, id_dipilih["nilai"]))
             db.commit()
-            messagebox.showinfo("Berhasil", "✅ Tarif Berhasil Diperbarui!")
+            messagebox.showinfo("Berhasil", "Tarif Berhasil Diperbarui!")
             lbl_jenis.configure(text="Pilih dari tabel")
             ent_tarif.delete(0, "end")
             
@@ -770,14 +749,14 @@ def kelola_tarif_parkir():
 
     frm_tombol = ctk.CTkFrame(frm, fg_color="transparent")
     frm_tombol.grid(row=2, column=0, columnspan=2, pady=15)
-    ctk.CTkButton(frm_tombol, text="📋 PILIH DATA",
-                  fg_color="#3182CE", hover_color="#2B6CB0",
-                  width=140, height=40, corner_radius=10,
-                  command=ambil_data_edit).pack(side="left", padx=5)
-    ctk.CTkButton(frm_tombol, text="💾 SIMPAN PERUBAHAN",
-                  fg_color="#38A169", hover_color="#2F855A",
-                  width=180, height=40, corner_radius=10,
-                  command=simpan_perubahan).pack(side="left", padx=5)
+    ctk.CTkButton(frm_tombol, text="PILIH DATA",
+                fg_color="#3182CE", hover_color="#2B6CB0",
+                width=140, height=40, corner_radius=10,
+                command=ambil_data_edit).pack(side="left", padx=5)
+    ctk.CTkButton(frm_tombol, text="SIMPAN PERUBAHAN",
+                fg_color="#38A169", hover_color="#2F855A",
+                width=180, height=40, corner_radius=10,
+                command=simpan_perubahan).pack(side="left", padx=5)
 
     frm_tabel = ctk.CTkFrame(jendela, fg_color="#FFFFFF")
     frm_tabel.pack(pady=(5, 15), padx=25, fill="both", expand=True)
