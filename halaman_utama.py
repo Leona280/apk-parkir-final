@@ -69,6 +69,8 @@ def buat_halaman_utama(aplikasi):
         frm_btn.pack(pady=15, padx=20)
 
         if aplikasi.role == "admin":
+            for w in isi.winfo_children():
+                w.destroy()
             ctk.CTkLabel(isi, text="DASHBOARD ADMIN",
                         font=("Arial", 18, "bold"), text_color="#2B6CB0").grid(row=0, column=0, columnspan=2, pady=(15, 20))
             db = buat_koneksi()
@@ -122,6 +124,17 @@ def buat_halaman_utama(aplikasi):
 
             ctk.CTkLabel(isi, text="KELOLA DATA",
                         font=("Arial", 13, "bold"), text_color="#2D3748").grid(row=2, column=0, columnspan=2, pady=(0, 8))
+            
+            def buka_edit_dan_refresh(id_parkir):
+                def refresh_setelah_simpan():
+                    buat_halaman_utama(aplikasi)
+                    
+                jendela_edit = buka_jendela_edit(aplikasi, id_parkir, refresh_setelah_simpan)
+                
+                def saat_tutup():
+                    refresh_setelah_simpan()
+                jendela_edit.protocol("WM_DELETE_WINDOW", saat_tutup)
+            
             ctk.CTkButton(isi, text="KELOLA AREA PARKIR",
                         fg_color="#3182CE", hover_color="#2B6CB0",
                         width=275, height=42, corner_radius=12,
@@ -145,7 +158,7 @@ def buat_halaman_utama(aplikasi):
 
             frm_scroll = ctk.CTkScrollableFrame(isi, label_text="", height=300, fg_color="#F7FAFC")
             frm_scroll.grid(row=6, column=0, columnspan=2, padx=15, pady=(0, 10), sticky="nsew")
-
+            
             if daftar_kendaraan:
                 for idx, data in enumerate(daftar_kendaraan):
                     id_parkir, plat, jenis, waktu, area = data
@@ -160,7 +173,7 @@ def buat_halaman_utama(aplikasi):
                     ctk.CTkButton(baris, text="EDIT", width=60, height=28, corner_radius=6,
                                 fg_color="#38A169", hover_color="#2F855A",
                                 font=("Arial", 10, "bold"),
-                                command=lambda pid=id_parkir: buka_jendela_edit(aplikasi, pid)).pack(side="left", padx=10, pady=6)
+                                command=lambda pid=id_parkir: buka_edit_dan_refresh(pid)).pack(side="left", padx=10, pady=6)
             else:
                 ctk.CTkLabel(frm_scroll, text="Tidak ada kendaraan yang sedang parkir",
                             font=("Arial", 12), text_color="#718096").pack(pady=30)
@@ -486,7 +499,7 @@ def buat_halaman_utama(aplikasi):
                     fg_color="#805AD5", hover_color="#6B46C1", width=280, height=50, corner_radius=10,
                     command=lambda: tampilkan_log(aplikasi)).pack(side="left", pady=5, padx=20)
 
-def buka_jendela_edit(induk, id_parkir=None):
+def buka_jendela_edit(induk, id_parkir=None, fungsi_refresh=None):
     jendela_edit = ctk.CTkToplevel(induk)
     jendela_edit.title("EDIT DATA KENDARAAN")
     jendela_edit.geometry("540x480")
@@ -577,7 +590,9 @@ def buka_jendela_edit(induk, id_parkir=None):
             """, (plat_baru, jenis_baru, id_area_baru, waktu_baru, id_p))
             db.commit()
             messagebox.showinfo("Berhasil", "Data kendaraan berhasil diperbarui!")
-            jendela_edit.destroy()
+            if fungsi_refresh:
+                fungsi_refresh()
+                jendela_edit.destroy()
         except Exception as e:
             db.rollback()
             messagebox.showerror("Error", f"Gagal menyimpan:\n{str(e)}")
